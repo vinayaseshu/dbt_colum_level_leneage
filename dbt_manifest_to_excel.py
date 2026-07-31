@@ -513,7 +513,15 @@ def parse_args():
 def main():
     args = parse_args()
 
-    manifest = load_manifest(args.manifest_path)
+    try:
+        manifest = load_manifest(args.manifest_path)
+    except FileNotFoundError:
+        print(f"Error: manifest file not found: {args.manifest_path}", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"Error: {args.manifest_path} is not valid JSON ({e})", file=sys.stderr)
+        sys.exit(1)
+
     model_names = _flatten_csv(args.model)
     path_patterns = _flatten_csv(args.path)
 
